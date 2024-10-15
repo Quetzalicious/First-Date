@@ -23,7 +23,7 @@ define gui.show_name = False
 
 ## The version of the game.
 
-define config.version = "1.2"
+define config.version = "1.4"
 
 
 ## Text that is placed on the game's about screen. Place the text between the
@@ -207,3 +207,7 @@ init python:
 ## by a slash.
 
 # define build.itch_project = "renpytom/test-project"
+
+# Forces the textbox to fill the configured available space.
+# This is necessary to get text centered.
+style say_vbox xfill True
