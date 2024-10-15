@@ -1,15 +1,24 @@
-# The script of the game goes in this file.
-
-# Declare characters used by this game. The color argument colorizes the
-# name of the character.
+## Characters
+# Narrator
+define nar = Character(None, what_prefix="{color=#e8a86d}", what_suffix="{/color}", what_xalign=0.5, what_text_align=0.5)
+# Ambient/environmental "sounds" (sniff sniff)
+define env = Character(None)
+# MC
 define mc = Character("[MC]", color="#13c14a")
+# MC thinking
+define mct = Character("{i}[MC]{/i}", color="#13c14a", what_prefix="{i}(", what_suffix="){/i}")
+# Sam
 define sam = Character("[sam]", color="#da28e4")
-define sam2 = Character("[sam]", color="#4334cb")
+# Sam thinking
+define samt = Character("{i}[sam]{/i}", color="#da28e4", what_prefix="{i}(", what_suffix="){/i}")
+# GrimCiri / Dev commentary
+define gc =  Character("GrimCiri (Dev)", color="#303030", what_prefix="{color=#426cbf}", what_suffix="{/color}")
+
+# Transitions
 define pushright = PushMove(1.0, "pushright")
 define pushleft = PushMove(1.0, "pushleft")
 define pushup = PushMove(1, "pushup")
 define pushdown = PushMove(1.0, "pushdown")
-define gc =  Character("GrimCiri (Dev)", color="#303030")
 
 $ istrap = 0
 $ isknown = 1
@@ -32,11 +41,12 @@ Created by GrimCiri.
 
 Renders made in DAZ Studio 4.21""")
 
-define config.version = "1.3"
+define config.version = "1.4"
 
 # For legal reasons
 label age_restriction_menu:
     menu:
+        "You understand that this is a work of fiction.\nAnything seen in-game is fantasy and does not represent real life."
         "Yes.":
             jump begin
         "No.":
@@ -44,422 +54,340 @@ label age_restriction_menu:
 
 # For legal reasons
 label start:
-    $ DevCom = 0
     label variables:
     stop music fadeout 4.0
-    "This game is intended for adults. By playing this game, you agree that you
-    are at least 18 years of age, and that it violates no laws in your country of residence."
+    "This game is intended for adults. By playing this game, you agree that you are at least 18 years of age, and that it violates no laws in your country of residence."
     "All characters depicted within this game are at least 18 years of age."
-    "You understand that this is a work of fiction anything seen in game is fantasy and does not represent real life."
     jump age_restriction_menu
 
 # For legal reasons
 label DevTrack:
     $ DevCom = 1
-    "Developer commentary has been enabled!"
+    nar "Developer commentary has been enabled!"
     show grim1
-    gc "This is not mean for your first play though if you have somehow enabled this and not already played though the game I suggest you return to the main menu"
-    "Here is a brief run down of Developer commentary mode, think of it like a director commentary on a DVD, the game will play out like normal except I will interject periodically to include little development tidbits"
-    "This probably {b}won't{/b} be interesting for most people you have been warned."
+    gc "This is not meant for your first playthrough." 
+    gc "if you have somehow enabled this and not already played through the game I suggest you return to the main menu."
+    gc "Here is a brief run-down of Developer commentary mode. Think of it like a director's commentary on a DVD. The game will play out like normal, except I will interject periodically to include little development tidbits."
+    gc "This probably {b}won't{/b} be interesting for most people. You have been warned."
     hide grim1
-    jump begin
+    jump start
 
 
 # The game starts here.
 label begin:
     scene whiteroom
-
-    "Now is the love interest a Woman or Dickgirl?"
+    "Is the love interest a Woman or Dickgirl?"
     $ isoral = 0
     $ isfoot = 0
     menu:
         "Woman":
+            $ isknown = 1
             $ istrap = 0
-            $ isknown = 1
-            
         "Trap":
-            $ istrap = 1
             $ isknown = 1
-            # menu:
-            #     "Suprise":
-            #         $ isknown = 0
-            #     "Friend":
-            #         $ isknown = 1
-        "I'm Feeling Lucky!"   :
+            $ istrap = 1
+        "I'm Feeling Lucky!":
             $ isknown = 0
-            $ istrap = renpy.random.randint(1, 2)
-            if istrap == 1:
-                $ istrap = 0
-            elif istrap == 2:
-                $ istrap = 1
-
-                "its [istrap]"
-
-
-    "Great! lets start"
-
-    jump Prologue
-
-    menu:
-        "Start":
-            jump Prologue
-        "Coffee":
-            jump coffee
-        "Kiss":
-            jump kiss
-        "BJ":
-            jump blowjob
-        "Sex":
-            jump sex
-        "Testing":
-            jump sex2
-        "Ending":
-            jump ending
+            $ istrap = renpy.random.randint(0, 1)
+    "Great! Let's start."
 
 label Prologue:
     scene fd888
-    $ MC = "Guy"
-    "What is his name (This is you)..."
-    $ MC = renpy.input("Name{i}{size=-10}{color=#B0E0E6}{/color=#B0E0E6}{/size=-10}{/i} (Default Guy)", length=15) or "Guy"
-    $ MCcap = MC.upper()
+    $ MC = renpy.input("This is you. What is your name? {i}{size=-10}{color=#B0E0E6}(Default: Guy){/color}{/size}{/i}", length=15) or "Guy"
+
     scene prologue
     if DevCom == 1:
         show grim1
-        gc"So This prologue perhaps unsurprisingly was actually one of the last parts of the story, when I wrote the script it originally started 'post' the date and kind of jumped right into the action"
-        gc"However, as I play tested I realized that I left a lot too ambiguous, stuff that I basically head canoned but never actually wrote backstory for."
-        gc"I didn't want to make the game overly long, so a prologue was I think the easiest way to build up the characters without becoming too wordy."
+        gc"This prologue, perhaps unsurprisingly, was actually one of the last parts I created. When I wrote the script, it originally started 'post' the date and kind of jumped right into the action."
+        gc"However, as I play-tested, I realized that I left things too ambiguous, stuff that I basically head-canoned, but never actually wrote backstory for."
+        gc"I didn't want to make the game overly long, so a prologue was, I think, the best way to build up the characters without being too wordy."
         hide grim1
-    else:
-        gc"Sorry I couldn't think of a more clever way to integrate this into the story."
     scene fd_prolog_1
-    "When [MC] was still a child, he grew up in the small town of Springfield"
+    nar "As a child, you grew up in a small town called Springfield."
     scene fd_prolog_2
-    "You were popular in school"
+    nar "You were popular in school."
     if DevCom == 1:
         show grim2
-        gc"I was originally going to add the LI as an Easter egg to the background here but, since I used these grey figures as extras I thought it would stand out too much"
+        gc"I was originally going to add the LI as an Easter egg to the background here but, since I used these grey figures as extras, I thought she would stand out too much."
         hide grim2
-    
     scene fd_prolog_2a
-    "Well liked by all"
+    nar "Well-liked by everyone."
     if DevCom == 1:
         show grim2
-        gc"If it's not clear this is supposed to be the Sarah the other barista you reconnect with later in the story"
+        gc"If it's not clear, this is supposed to be Sarah, the friend and barista you reconnect with later in the story."
         hide grim2        
     scene fd_prolog_3b
-    "However after high school you made the tough decision to leave for the big city for a better education to pursue your dream career"
+    nar "However, after graduating high school, you made the tough decision to leave for the big city. You wanted to pursue a higher education that would put you on track toward your dream career."
     if DevCom == 1:
         show grim1
-        gc"Perhaps this is cheap, but using IRL photos for minor scenes like this is way easier to render and saves a tone of time."
+        gc"Perhaps this is cheap, but using IRL photos for minor scenes like this is way easier to render and saves a tons of time."
         hide grim1       
     scene fd_prolog_4
-    "it wasn't easy you had to keep your head down and study hard"
+    nar "It wasn't easy.{w}\nYou had to keep your head down and study hard."
     scene fd_prolog_5
-    "but it all paid off in the end as you managed to achieve your dream and land the career opportunity of your life"
-    "After a few years at the company, a promotion came up as a lead on a new product that also happened to allow you to return home"
+    nar "But, it all paid off in the end, as you managed to achieve your dream and landed the job of a lifetime."
+    nar "After a few years you were offered to lead the launch of a new product, which was developed in Springfield."
     scene fd_prolog_6
-    "You jumped at the opportunity as a little way to see the homestead once again and catch up with old friends"
+    nar "You eagerly accepted the promotion, jumped at the opportunity to return to your home town, and catch up with old friends."
     scene fd_prolog_7
-    "while back home you met up with Sarah a once girlfriend but now just friends she owns a cafe in town"
+    nar "After returning to Springfield, you met up with Sarah, a once girlfriend."
+    nar "While she had moved on with her life, you remained good friends. She now owns and runs a cafe in town."
     scene fd_prolog_7a
-    "after a few visits and catching up, she tell you that you have attracted a secret admirer"
+    nar "After a few visits and catching up, she tells you that you've attracted a secret admirer."
     scene fd889
-    "Her name is..."
-    $ sam = renpy.input("Name{i}{size=-10}{color=#b0e6d1}{/color=#b0e6d1}{/size=-10}{/i} (Default Sam)", length=15) or "Sam"
-    "[sam] the barista who works for Sarah is very shy but has developed a crush on you."
-    "Sarah tell you she is a nice quite girl but far too shy to ask you out on her own and knows you are too thick headed to notice"
-    "She is not the type of girl you normally hang with, as years in the city has made you accustom to girls who are much bolder and brash"
-    "'At the very least she needs the experience.' Sarah tell you"
+    $ sam = renpy.input("Her name is:{i}{size=-10}{color=#b0e6d1} (Default: Sam){/color}{/size}{/i}", length=15) or "Sam"
+    nar "[sam]. The shy barista who works for Sarah has developed a crush on you."
+    nar "Sarah tell you that [sam] is a nice and quiet girl, and far too shy to ask you out on her own."
+    nar "She also suggests you're probably too thick-headed to notice her yourself."
+    nar "[sam] is not the type of girl you normally hang with, as years in the city has made you accustomed to girls who are much bolder and brash."
+    nar "'At the very least she needs the experience.' Sarah tell you."
     if DevCom == 1:
         show grim1
-        gc"Sam was picked as the default name (in code too) because its short and gender ambiguous."
+        gc"[sam] was chosen as the default name (in code too) because it's short and gender ambiguous."
         hide grim1       
     scene fd_prolog_8
-    "Well you've got nothing to lose and she is cute 'Why not' you think"
-    "because of your awkward work schedule you settle on a lunch date, you worry [sam] might think you are not trying but seem happy nonetheless."
+    nar "With nothing to lose, and considering she's cute; 'Why not,' you think."
+    nar "Because of your awkward work schedule you settle on a lunch date. You worry [sam] might think you aren't trying hard enough, but she seems happy nonetheless."
     scene fd_prolog_9a
-    "You take her out to a restaurant you remembered liking from your childhood, it has gotten more upscale since you were last in town...{w} you are under dressed"
+    nar "You take her out to a restaurant you remembered liking. It has gotten more upscale since you were last in town...{w}\nYou are under-dressed."
     scene fd_prolog_9b
-    "The Date seems to go well but you can't help but feel you are the one doing all the talking"
+    nar "The date seems to go well, but you can't help but feel you are the one doing all the talking."
     scene fd_prolog_9c
-    ##scene fd_prolog_9d
-    "You decide to also take her out to a movie of her choice, maybe that will make her feel a little more comfortable and open up"
+    nar "You propose to go see a movie of her choice, thinking this will make her feel a little more comfortable and open up to you."
     show postera
-    "To your surprise, she picks a movie you've never heard of 'Rock 'n' Roll Zombies 5: Undead Encore'"
-    ##add a new render here of sam looking happy and movie poster
+    nar "To your surprise, she picks a movie you've never heard of: 'Rock 'n' Roll Zombies 5: Undead Encore'."
     hide postera
-
-    "The is where our game picks up from leaving the movie theatre."
-
-    jump date
+    nar "Your story starts as you're leaving the movie theatre together."
 
 label date:
     scene theatrepan
-    $ renpy.pause ()
+    $ renpy.pause(delay=5.6)
     scene fd_theatre_li_100 with dissolve
-    sam"So what did you think?"
+    sam"So... what did you think?"
     scene fd_theatre_li_200 with dissolve
-    mc"Of the movie? well, it's certainly... different."
+    mc"Of the movie? Well, it's certainly... different."
     scene fd_theatre_li_101
     sam"Oh..."
     scene fd_theatre_li_201
-    mc"No! In a good way, it's just not something I would have thought to watch on my own."
+    mc"No! I mean, in a good way! It's just not something I would have thought to watch on my own, that's all."
     scene fd_theatre_li_102
     sam"Oh."
     scene fd_theatre_li_202
-    mc"You know, I would have though, I would've needed to have seen the first four first,"
+    mc"You know, I was worried I needed to have seen the other four movies..."
     scene fd_theatre_li_204
-    mc"but with such a cute aficionado with me I think I was just about was able to follow the deep lore of 'Rock 'n' Roll Zombies universe"
+    mc"But with such a cute aficionado with me, I think I was just about able to follow the deep lore of the 'Rock 'n' Roll Zombies'-universe!"
     scene fd_theatre_li_103
-    sam"Please, maybe you were having trouble following along because of all the drinks you were downing."
+    sam"Please... Maybe you were having trouble following along because of all the drinks you were downing."
     scene fd_theatre_li_207
-    mc"Hey when Reel Deal Tuesday extends to the drinks, how can I {b}not{/b} capitalize on it?"
+    mc"Hey! When Reel Deal Tuesday extends to the drinks, how can I {b}not{/b} capitalize on it?"
     scene fd_theatre_li_105a
-    sam"Uh maybe by correcting the kid, he clearly made a mistake on the pricing"
+    sam"Uhm... Maybe by correcting the kid? He clearly made a mistake on the pricing."
     scene fd_theatre_li_206
-    mc"Mmm that's his fault...{w} though maybe I shouldn't get into the habit of day drinking"
+    mc"*Mmm* That's his fault..."
     scene fd_theatre_li_208
-    mc"It's not a good look, is it?"
+    mc "Though, I probably shouldn't get into the habit of day drinking.{w}\nIt's not a good look, is it?"
     scene fd_theatre_li_106
-    sam"I won't tell if you don't"
+    sam"I won't tell if you don't!"
     scene fd_theatre_li_209
-    mc"Haha thanks but, I think the smell of booze on my breath might just give me away."
+    mc"*Haha* Thanks! I think the smell of booze on my breath might just give me away, though."
     if DevCom == 1:
         show grim1
-        gc"I wanted a justification for [sam] to become curious in [mc]'s smell this was the best I could come up with."
+        gc"I wanted a justification for [sam] to become curious in [mc]'s smell. This was the best I could come up with."
         hide grim1   
     scene fd_theatre_li_211
-    mc"Maybe I can just keep a safe distance between me an my clients think that will do the trick?"
+    mc"Maybe I can just keep a safe distance between me and my colleagues. You think that would do the trick?"
     scene fd_theatre_li_210
-    mc"They are not the most observant you know that might work"
-    mc"Plus it not like I'm even the worst smelling guy in the office"
+    mc"They aren't the most observant... That might just work!"
+    mc"Plus, it's not like I'm even the worst smelling guy in the office."
     scene fd_theatre_li_109
-    sam"hmmm"
+    sam"*hmmm*"
     scene fd_theatre_li_214
     mc"Do you know Jerry? I tell you that guy is-"
     scene fd_theatre_li_313
-    mc"*Ramble* *Ramble* *Ramble*"
+    mc"*Ramble*{w=0.6} *Ramble*{w=0.5} *Ramble*{w=0.4}{nw}"
     scene fd_theatre_li_314
-    mc"*Ramble* *Ramble* *Ramble*"
+    mc"*Ramble*{w=0.4} *Ramble*{w=0.3} *Ramble*{w=0.3}{nw}"
     scene fd_theatre_li_315
-    mc"*Ramble* *Ramble* *Ramble*"
+    mc"*Ramble*{w=0.2} *Ramble*{w=0.2} *Ramble*{w=0.2}{nw}"
     scene fd_theatre_li_214a
-    mc"(Uh oh I'm getting pretty rambley I probably shouldn't talk her ear off just when she was opening up)"
-    "*Sniff* *Sniff*"
+    mct"Uh oh! I'm getting pretty rambley. I probably shouldn't talk her ear off just when she was starting to open up."
+    env"{size=-10}*Sniff* *Sniff*{/size}"
     scene fd_theatre_li_115
     mc"What?!"
     scene fd_theatre_li_116
-    sam"ah-"
+    sam"Ah-"
     scene fd_theatre_li_316
-    ""
+    $ renpy.pause(delay=1.0)
     scene fd_theatre_li_117
-    sam"I was just smell{size=-5}ing{/size}-"
+    sam"I was just sm{size=-7}ell{size=-7}ing{/size}{/size}-"
     scene fd_theatre_li_120
-    sam"{size=-10}(OMG OMG OMG){/size}"
+    samt"{size=-10}*Oh my god*{w=0.4} *ohmygod*{w=0.3} *OHMYGOD*{w=0.3}{/size}{nw}"
     scene fd_theatre_li_317
-    sam"{size=-10}(Why did I do that){/size}"
+    samt"{size=-10}Why did I do that?!{/size}"
     scene fd_theatre_li_121b
-    sam"Well it's been great, but I should probably go"
+    sam"It's been great! But I should probably go!"
     scene fd_theatre_li_219
-    mc"[sam]"
+    mc"[sam]..."
     scene fd_theatre_li_122a
-    sam"I know you're probably busy and- {size=-10}(I just want to curl up and die please){/size}"
+    sam"I know you're probably busy, and- {w=0.4}{size=-10}{cps=40}{i}(I just want to curl up and die!){/i}{/cps}{/size}"
     scene fd_theatre_li_122b
-    mc"[sam] stop"
+    mc"[sam], stop!"
     scene fd_theatre_li_123a
-    mc"[sam] don't make me chase you down the street"
-    sam"{size=-10}*Sorry*{/size}"   
+    mc"Don't make me chase you down the street."
+    sam"{size=-10}Sorry.{/size}"   
     mc"Do you wanna get out of here?"
     scene fd_theatre_li_123c
-    sam"{size=-10}Yes{/size}"   
-    mc"let me take you home then"
+    sam"{size=-10}*nods*{/size}"   
+    mc"Let me take you home?"
     scene fd_theatre_li_123b   
-    $ renpy.pause ()
-    sam"{size=-5}Okay{/size}"
-    jump demo
-
-
-
+    $ renpy.pause(delay=1.0)
+    sam"{size=-5}Okay.{/size}"
 
 label demo:   
     scene hallway2 
-    $ renpy.pause ()
+    $ renpy.pause(delay=0.8)
     scene hallway1
-    $ renpy.pause ()
+    $ renpy.pause()
     scene fd001 with dissolve
     if DevCom == 1:
         show grim1
-        gc"This is where the game originally started."
-        gc"and where most of the exposition was originally going to be put before everything else was added instead."
+        gc"This is where I originally planned to start the game.\nMost of the exposition was going to be inserted here."
         hide grim1     
-    mc"(God just when I thought I was getting her to open up it looks like I pushed too far and embarrassed her in the process.)"
-    mc"(I hope I didn't mess things up she's just far more shy and reserved than I'm used to.)"
+    mct"God! Just when I thought I was getting her to open up, I pushed too far and embarrassed her."
+    mct"I hope I didn't mess things up. She's just far more shy and reserved than I'm used to."
     scene fd002 with dissolve
-    mc"(I can't help hope I didn't ruin the experience for her, maybe I need to rethink my tact.)"
+    nar "Worried you ruined [sam]'s experience, you get yourself together, and try to salvage the date."
     scene fd003 with dissolve
     if DevCom == 1:
         show grim2
-        gc"These are some of my earliest renders left in the game, most of all the renders in game got redone two or three times"
-        gc"I debated redoing these too but I felt I might just never finish the game if I kept remaking scenes"
+        gc"These are some of my earliest renders left in the game, most renders were redone two or three times"
+        gc"I debated redoing these too, but I felt I'd never finish the game if I kept remaking scenes."
         hide grim2      
-    mc"(She's been silent since we got in the car, maybe she {i}did{/i} want to get away from me and now I'm just following her back to her house.)"
+    mc"She's been silent since we got in the car. Maybe she {i}did{/i} want to get away from me and now I'm just following her back to her house like a creep."
     scene fd004 with dissolve
-    mc"(Suddenly she glances back at me,{w} it kind of feels like I'm stalking her, now I feel like a creep.)"
+    nar "[sam] glances at you over her shoulder, making you feel like a stalker."
     scene fd005 with dissolve
-    "but she's actually slowing down are you both approach her apartment door"
+    nar "But, to your surprise, she slows down as you both approach her apartment's door."
     scene fd009
-  
-    #scene fd001 with dissolve
-    #"I went on a date with [sam] tonight she is not my usual type"
-    #scene fd002 with dissolve
-    #"but a friend of mine who owns the local coffee shop [sam] works at asked me to do this as a favour to her."
-    #scene fd003 with dissolve
-    #"I thought the date when pretty well, she is very shy on our date but now walking her home we haven't shared a single word together"
-    #scene fd004 with dissolve
-    #"Suddenly she glances back at me,{w} it kind of feels like I'm stalking her, great now I feel like a creep"
-    #scene fd005 with dissolve
-    #"but she's actually slowing down we must be at place now{w}, finally she stops and turns to me"
-    #scene fd009
-
     $ renpy.movie_cutscene("fdturn.mkv")
-
-
 
     scene fd007 with dissolve
     if DevCom == 1:
         show grim1
         gc"That animation and the upcoming walking animation are the only pre-made animations I used, everything else I animated myself."
-        gc"which is why the quality is a little sporadic"
+        gc"This is why the animation quality can seem a little sporadic."
         hide grim1        
-    "She breaks the silence"
+    nar "She breaks the silence."
     sam"This is my place."  
-    sam"Thanks for walking me home."
+    sam"{size=-5}Thanks for walking me home.{/size}"
     mc"It was a pleasure!"
-    sam"I had a really nice time with you... {size=-5} until I umm.{/size}"
-    mc"Don't even worry about it{w} if you'd like we can end it on a better note instead?" 
-    "Normally I would end a date with a kiss but she seems to purposely have distanced herself from me now."
+    sam"I had a really nice time with you... {size=-7}until I... {size=-7}umm.{/size}{/size}"
+    mc"Don't even worry about it.{w}\nIf you'd like we can end our date on a higher note?" 
+    mct"Normally I would end a date with a kiss... But she seems to have purposely distanced herself."
     scene fd008 with dissolve
-    sam"Really? err...{w} would you like to come inside"
+    sam"Really? {size=-7}err...{/size}{w}\nWould you like to come inside?"
     scene fd013 with dissolve
-    sam"For a coffee... or something?"
-    "Oh wasn't expecting that."
+    sam"For a coffee? {size=-7}Or something?{/size}"
+    mct"Oh, wasn't expecting that."
     scene fd009 with dissolve
-    mc"Sure a coffee sound great about now."
-    "She lights up."
+    mc"Sure! A coffee sound great about now."
     scene fd010 with dissolve
+    nar "She lights up."
     sam"Great!"
-    "...I wait for her to let us in."
+    nar "...You wait for her to let you in."
     sam"Oh right! Hold on."
     scene fd011 with dissolve
-    "Then promptly spins back around to open the door"
-    scene fd012 with pushup
-    "While she fiddles with the knob, I can't help but drift my gaze"
+    nar "Seemingly in a good mood, [sam] promptly spins around to open the door."
+    scene fd012 with wipeup
+    nar "While she fiddles with the knob, you can't help but let your gaze drift."
     sam"Sorry!"
     mc"No worries..."
-    jump coffee
 
 label coffee:
     scene hallway2 with dissolve
-    "Finally we get into her apartment"
-    
+    nar "Finally, you enter her apartment."
     scene fd_landing_0 with dissolve
-
-    #$ renpy.movie_cutscene("fddance1.mkv", delay=None, loops=-1, stop_music=True)
-    "Huh maybe the date when better than I thought, but even still I never though [sam] would be the type to invite someone in on the first date"
+    mct"Huh. Maybe the date went better than I thought. Still, I never though [sam] would be the type of girl to invite someone in on the first date."
     scene fd_landing_1 with dissolve
-    "Maybe there's more to her than I thought"
-    "Or maybe she really did just offer me coffee and I'm reading into this way too much..."
+    mct"Maybe there's more to her than I thought."
+    mct"Do still waters run deep, or is she naively offering me a coffee?"
     scene fd_landing_4a with dissolve
-    "hmm{w} say we haven't even been standing here that long but it looks like she's already lost in thought."
-    "I guess I am too but I've been monologue-ing to myself, what could she be thinking I wonder?"
+    mct"Hmm.{w} We haven't even been standing here that long, but it looks like she's already lost in thought."
+    mct"I guess I am too, as I've been monologue-ing to myself. What could she be thinking?"
     scene fd_landing_4 with dissolve 
-    "Suddenly see seems to snap back to reality a little embarrassed it seems"
+    nar"[sam] seems to suddenly snap back to reality, she seems a little embarrassed."
     scene fd_landing_5 with dissolve
-    sam"Oh sorry right the uh... coffee"
+    sam"Oh sorry! Right! The uh...{w=0.6} coffee."
     scene fd_landing_6 with dissolve
-    "You haven't even taken your shoes off yet but she quickly hurries off to the kitchen."
+    nar "Before you can even take off your shoes, [sam] runs off to the kitchen."
     scene Walk1
     $ renpy.pause (1.4)
     scene fd_landing_6a with dissolve
-    $ renpy.pause ()
-    "you hurry your shoes off to catch up"
-    "While you catch up you look around at the apartment it's nice, it's very...{w} pink."
+    $ renpy.pause (0.5)
+    nar "You quickly take off your shoes, and hurry to catch up to her."
+    nar "[sam]'s apartment is nice, and very...{w=0.6} pink."
     scene fd_landing_7 with dissolve
-    sam"I'm really glad you {i}finally{/i} took me out tonight I had a really nice time."
+    sam"I'm happy you {i}finally{/i} took me out tonight. I had a really nice time."
     scene fd_landing_7a with dissolve
-    $ renpy.pause ()
+    $ renpy.pause (1.0)
     scene fd_landing_7ca with dissolve
     mc"Finally?"
     scene fd_kitchen01 with dissolve     
     sam"Huh?"
     scene fd_kitchen02a with dissolve  
-    sam"Oh,{w} well it's just that from when I first saw you at the shop {size=-10}I thought...{/size}"
-    sam"I just {i}kept{/i} seeing you in the mornings at the coffee shop and I kept thinking that today would be the day when you'd {i}finally{/i} ask me out."
-    #scene fd104 with dissolve     
-    ## sam"You know no better way to end a night than with a nightcap right?" ## I don't know what this means?
+    sam"Oh! Well, it's just- The first time I saw you at the shop {size=-10}I thought...{/size}"
+    sam"Then I just {i}kept{/i} seeing you in the mornings, and I kept thinking that today would be the day when you'd {i}finally{/i} ask me out."
     scene fd_appt_m_react1 with dissolve        
-    mc"from the first time you saw me?"
+    mc"From the first time you saw me?"
     scene fd_kitchen0304 with dissolve        
     if isknown == 1:
-        sam "hehe {size=-10}yeah...{/size} I guess in my mind I've been waiting...{w} a {i}while{/i} for this date."
+        sam "*Hehe* {size=-10}yeah...{/size} I guess in my mind I've been waiting a {i}while{/i} for our date."
     else : 
-        sam "hehe {size=-10}yeah...{/size} I guess in my mind I've been waiting weeks for this date."
+        sam "*Hehe* {size=-10}yeah...{/size} I guess in my mind I've been waiting weeks for this date."
     scene fd_kitchen0305 with dissolve     
-    sam"I just kept seeing you, in the morning, and it was I all I could think about."
+    sam"It was I all I could think about."
     scene fd_kitchen0306 with dissolve        
-    sam"I thought you were..{w} cute"
-    
-    sam"I grabbed the wrong order{w} three times {w} last week, because I was just {i}so{/i} distracted looking at you wondering..."
+    sam"I thought you were...{w=0.5} cute"
+    sam"I made the wrong order three times last week, because I was just {i}so{/i} distracted looking at you..."
+    # I feel like Guy needs to say something here that encourages Sam to keep talking
     scene fd_appt_wide_1 with dissolve        
-
-    #scene fd109 with dissolve      
-    sam"Okay, don't laugh {w} but I've just been daydreaming of how you could ask me out, a bouquet of flowers, secret messages passed in the coffee, on a lone hill during the sunset those kinds of things"
-    
-    #I was kind of had this little dream walking in with a single rose leaning in and asking me out and then we blow off work and ride off right then and there"
-    #sam"wondering if you even noticed me and that you would just one day{w} man up, take charge and ask me out"
+    sam"Okay, don't laugh, but I was daydreaming of how you would ask me out. A bouquet of flowers, secret messages passed in the coffee, on a lone hill during the sunset... Those kinds of things."
     scene fd_appt_mc_sit_talka00000 with dissolve    
-    mc"And you get asked out like this...{w} often?"
-
-    ##mc"'take charge?'{w} you don't get out much do you?"
+    mc"And you get asked out like this...{w=0.6} often?"
     scene fd_appt_f_walk1a with dissolve 
-    sam"{size=-9}*He he*{/size} no I...{w} it's from this this romance novel I'm reading."   
-    #sam"Haha yeah no I...{w} I don't get asked out a lot"
+    sam"{size=-9}*Hehe*{/size} No, I- It's from this romance novel I'm reading."   
     scene fd_appt_mc_sit_talka00001 with dissolve    
-    mc"Ah, well how can I compete with the great E. L. James"
+    mc"Ah, well how can I compete with the great E. L. James."
     if DevCom == 1:
         show grim1
-        gc"If this joke didn't land E. L. James is the author of 50 Shades of Grey. I had to look it up to when I realized I didnt know a single author."
+        gc"If this joke didn't land E. L. James is the author of 50 Shades of Grey. I had to look it up to when I realized I didn't know a single author."
         hide grim1     
     scene fd_appt_mc_sit_talka00003 with dissolve    
-    sam"No not that book you goof"
+    sam"No! Not that book, you goof."
     scene fd_appt_f_cute1a with dissolve
-    sam"but still now that I've tried it I like the real thing way more."
-
+    sam"But still, now that I've tried it, I like the real thing way more."
     scene fd_appt_m_react6 with dissolve   
-    mc"So you've never been on a date before?"
-    sam"Umm I guess you could say well...{w} no."
-
-    mc "Really why is that?"
+    mc"You've never been on a date before?"
+    sam"Umm...{w} I guess?{w} You could say...{w} Well...{w}\nNo?"
+    mc "Really? Why is that?"
     show fd_cute_pan_new:
         subpixel True
         yalign 1.0
         linear 6.0 yalign 0.0
     $renpy.pause(delay = 3.0, hard = True)
-    sam"I mean I don't know why I get asked out more...{w} I think I'm pretty cute"      
-    #scene pancute1
-    #$ renpy.pause ()
+    sam"I mean... I don't know why I don't get asked out more. {size=-8}I think I'm pretty cute.{/size}"
     scene fd_appt_m_react12 with dissolve  
     mc "You certainly are!"
     scene fd_stand_react1_pan19
-    sam"Thanks"
+    sam"Thanks."
     scene fd_stand_react1_pan18
-    $ renpy.pause ()
+    $ renpy.pause(delay=1.0)
     scene fd_appt_m_react3 with dissolve        
-    mc"Well whatever their loss. It'll just have to remain one of those unsolved mysteries."
+    mc"Well, It's their loss. It'll just have to remain one of those unsolved mysteries."
     scene fd_appt_mc_sit_flust100000 with dissolve  
-    sam"Okay,"
+    sam"Okay."
     scene fd_appt_mc_sit_flust100001 with dissolve  
-    sam"Well,"  
+    sam"Well."  
     if DevCom == 1:
         show grim1
         gc"One of the issues I noticed in a lot of other Daz3d games is characters can sometimes have very 'dead' expressions I tried to make them look very expressive here."
@@ -467,34 +395,33 @@ label coffee:
     scene fd_appt_mc_sit_flust100002 with dissolve   
     sam"I mean..." 
     scene fd_appt_mc_sit_flust2100 with dissolve
-    $ renpy.pause ()
+    $ renpy.pause(delay=1.2)
     scene fd_appt_m_react8 with dissolve
-    "Clearly a little uncomfortable she squirms in her seat"
+    nar "Clearly uncomfortable, [sam] squirms in her seat, mentally preparing herself to dredge up the past."
     scene fd_appt_mc_sit_flust2_camera with dissolve   
-    sam"Okay so in high school there were, these girls who were always making stuff up and spreading these nasty rumours about me."
+    sam"Okay. So. In high school there were these girls who were always making stuff up and spreading nasty rumours about me."
     scene fd_appt_mc_sit_flust2b00028 with dissolve   
-    sam"and it kind of just scared off all the guys"
+    sam"And, I guess, it kind of just scared off all the guys?"
     scene fd_appt_mc_sit_flust2b00029 with dissolve       
     sam"Then there was college..."
     scene fd_appt_mc_sit_flust100017 with dissolve   
-    sam"And I was so busy with my studies and never had time for dates"
+    sam"Where I was so busy with my studies that I never had the time for dates."
     scene fd_appt_mc_sit_flust100015 with dissolve
-    sam"and there's now, and I'm busy working to pay off my student loans"
+    sam"And now... Now I'm busy working to pay off my student debt."
     scene fd_appt_mc_sit_flust100016 with dissolve
-    sam"{size=-10}*So many student loans*{/size}"
+    samt"{size=-10}On a barista's wage.{/size}"
     scene fd_appt_mc_sit_flust100018 with dissolve  
-    sam"And that's basically of my life summed up, I guess I never found time for boys"
+    sam"That's basically my life summed up. I guess I never made the time for boys."
     scene fd_appt_m_react5 with dissolve  
-    mc"Well I'll help you make up for lost time."
+    mc"What do you say I'll help you make up for lost time?"
     if DevCom == 1:
         show grim2
-        gc"It was around here I realized I was doing a new render for almost every line of dialogue and that it was perhaps a little overkill"
+        gc"It was around here I realized I was doing a new render for almost every line of dialogue and that it was perhaps a little overkill."
         hide grim2      
-    # mc"Well none of that matters now and I can help you make up for lost time."
     scene fd_appt_mc_sit_flust100019 with dissolve  
-    sam"{size=-9}*Giggles*{/size} Yeah..."
+    sam"{size=-9}*Giggles*{/size} Yeah!"
     scene fd_appt_mc_sit_flust100022 with dissolve  
-    sam"umm so you know I have {b}never{/b} brought someone back to my place after a first date before"
+    sam"{size=-7}*Uhm* Just so you know, I have {b}never{/b} brought someone back to my place after a first date before.{/size}"
     scene fd_appt_m_react3 with dissolve
     python:  
         if MC.upper() == "MC" :
@@ -507,19 +434,17 @@ label coffee:
     if namer == 1 :
         mc"Well don't you just know how to make me feel like the {i}main character{/i}." ## possibly a funny pun if default name
     elif namer == 2 :
-        mc"Well don't you just know how to make this {i}Guy{/i} feel special"  
+        mc"Well don't you just know how to make this {i}Guy{/i} feel special!"
     else : 
-        mc"Well don't you know how to make a guy feel special"  
+        mc"Well don't you know how to make a guy feel special."
 
     scene fd_appt_mc_sit_flust100020 with dissolve 
-    sam"Gosh this is just moving so quickly"
+    sam"Gosh, this is just moving so quickly."
     #mc touches sam's hand or something in a reassuring way
     scene fd_appt_mc_sit_flust_g22 with dissolve 
-    mc"Hey"
+    mc"Hey?"
     scene fd_appt_mc_sit_flust_g23 with dissolve 
-    mc"Hey, we don't have to do anything you don't want to do"
-    #bits lip
-    jump kiss
+    mc"We don't have to do anything you don't want to do, okay?"
 
 label kiss:   
     scene horny
@@ -554,7 +479,7 @@ label kiss:
     scene fd_appt_kiss_new00003 with dissolve
     $ renpy.pause ()
     scene fd_appt_kiss_new00004 with dissolve    
-    "*Mwwwa*"
+    nar "*Mwwwa*"
     scene fd_appt_kiss_new00005 with dissolve
     sam"*hmmm*"
     scene fd_appt_kiss_new00006 with dissolve    
@@ -577,7 +502,7 @@ label kiss:
     scene fd_appt_kiss_new_3rd00004 with dissolve    
     $ renpy.pause ()
     scene fd_appt_kiss_new_3rd00005 with dissolve    
-    "Smooch"
+    env "*Smooch*"
     scene fd_appt_kiss_new_3rd00006 with dissolve    
     sam"(´｡• ᵕ •｡`)"
     scene fd_appt_kiss_new_3rd00007 with dissolve    
@@ -626,25 +551,25 @@ label blowjob:
     scene fd_appt_mc_undress00007 with dissolve  
     sam"Or flustered and I just start talking without {size=-10}thinking{/size} {size=-11} or,{/size} {size=-15} how to,{/size} {size=-20}stop...{/size}"
     scene shock
-    "And with that, she is truly at a loss for words."            
+    nar "And with that, she is truly at a loss for words."            
     scene fdn3 with dissolve 
-    "You can almost see the gears turning in her head."
+    nar "You can almost see the gears turning in her head."
     scene fdn5 with dissolve       
-    "Without a word she starts to move"
+    nar "Without a word she starts to move"
     scene fdn6 with dissolve     
     sam"I can touch it right?"
     scene fdn7 with dissolve    
     mc"Well you weren't going to stop at just looking"
     scene fd_appt_mc_undress00004
-    "She wastes no time"
+    nar "She wastes no time"
     scene handy1
-    "She looks really focused"
+    nar "She looks really focused"
     $ renpy.pause () 
     sam"*mmmm*"
     $ renpy.pause () 
 
     scene lowkiss
-    "Then She starts to lean in"
+    nar "Then She starts to lean in"
     scene fdn3117 with dissolve 
     sam"*Mooch*"
     scene fdn10 with dissolve 
@@ -657,7 +582,7 @@ label blowjob:
     sam"You're already so hard and...{w} and {size=+10}{b}big{/b}{/size}."
     scene fdn16 with dissolve 
     sam"and the way the veins are throbbing its perfect{w} you're perfect."
-    "Now you're at a loss for words you've never had a girl flatter you so much."
+    nar "Now you're at a loss for words you've never had a girl flatter you so much."
     scene fdn15a with dissolve 
     sam"It makes my mind go blank"
     scene fdn13 with dissolve 
@@ -667,9 +592,9 @@ label blowjob:
 
     $ renpy.end_replay()
     scene fd242a with dissolve
-    "She moves in closer"
+    nar "She moves in closer"
     scene nuzzle1 with dissolve
-    "It almost looks like she nuzzles your cock"
+    nar "It almost looks like she nuzzles your cock"
     scene nuzzle2 with dissolve    
     sam"God it's intoxicating"
 
@@ -792,8 +717,8 @@ label blowjob:
     # $ renpy.pause () 
 
     scene fdn108
-    "For someone so shy just a minute ago she is doing an amazing job"
-    "though you can see she to be struggling to get any deeper"
+    nar "For someone so shy just a minute ago she is doing an amazing job"
+    nar "though you can see she to be struggling to get any deeper"
     scene fdn109
     $ renpy.pause ()   
     scene fdn110
@@ -817,13 +742,13 @@ label blowjob:
     scene fd_blow_mouth100001
     sam"okay..."
     scene fd_blow_mouth300000 with dissolve 
-    "[sam] hops right back on." 
+    nar "[sam] hops right back on." 
     scene fd_blow_mouth300001
     $ renpy.pause ()
     scene fd_blow_mouth4pov00001 with dissolve 
     $ renpy.pause ()
     scene fd_blow_mouth4pov00000 with dissolve   
-    "and gets stuck at about the same spot."
+    nar "and gets stuck at about the same spot."
     scene fd_blow_mouth400003 with dissolve 
     mc"Why don't I help you out."
     scene fd_blow_mouth4pov00002 with dissolve 
@@ -831,7 +756,7 @@ label blowjob:
     scene fd_blow_mouth4pov00003 with vpunch 
     $ renpy.pause ()
     scene fd_blow_mouth400002 with vpunch 
-    "[sam] is caught a little off guard"
+    nar "[sam] is caught a little off guard"
     if DevCom == 1:
         show grim2
         gc"The game was originally going to have two paths a dominance and a romance path, ultimately i scraped it due to my poor writing skills"
@@ -854,7 +779,7 @@ label blowjob:
     mc"You okay?"
     scene fd_blow_mouth5bpov00003 at Shake((0,0,0,0), .8, dist=3)
     sam"♡ Ymm Hmmmm ♡"
-    "Her attempt at speaking send vibrations down your shaft."
+    nar "Her attempt at speaking send vibrations down your shaft."
     scene fddt16
     mc"Fuck, that feels amazing [sam]."
     scene fddt15
@@ -895,7 +820,7 @@ label blowjob:
     menu:
         "Come down throat":
             scene deep1a
-            "You ram your cock down her throat one final time"
+            nar "You ram your cock down her throat one final time"
             mc"Fuuuuck"
             scene fd_mouth100009 with flash 
             $ renpy.pause(delay = 0.5, hard = True)
@@ -914,7 +839,7 @@ label blowjob:
             scene fd_mouth100015 with dissolve
             sam"Just a little intense{w} maybe we can take a little break? so I can catch my breath."  
             scene fd290mm with vpunch  
-            "Yeah actually even I'm a light headed from that." 
+            nar "Yeah actually even I'm a light headed from that." 
         "Come in mouth":
             mc"Oh Fuck babe I'm about to come!"
             scene fd_mouth100008 with dissolve  
@@ -947,7 +872,7 @@ label blowjob:
             scene fd_mouth100015 with dissolve
             sam"That was a lot more in intense than I though it would be I think I need to catch my breath."  
             scene fd290mm with vpunch  
-            "You and me both I feel light headed from that." 
+            nar "You and me both I feel light headed from that." 
     scene fd290m with dissolve
     $ renpy.pause ()    
     scene fd280a with fade  
@@ -960,15 +885,15 @@ label blowjob:
     scene fd280b with dissolve     
     sam"Thanks I've been wanting that for a long time."
     scene fd281a with dissolve 
-    "She's never given a blowjob before? or maybe the technique?"
-    "Would it be mood killer to ask for clarification?"
+    nar "She's never given a blowjob before? or maybe the technique?"
+    nar "Would it be mood killer to ask for clarification?"
     scene fd280b with dissolve  
     sam"I wish I could say like this forever."
     scene fd280c with dissolve    
     mc"You really enjoyed it that much?"
     scene fd280b with dissolve      
     sam"Are you kidding? That was the most incredible thing that's ever happened to me,"
-    "God this girl might give me a complex if she keeps this up."
+    nar "God this girl might give me a complex if she keeps this up."
     sam"I've never really liked it here, but with you here maybe I wont be so..."
     sam"Ah It feels like a dream come true"
     scene fd280c with dissolve    
@@ -981,27 +906,27 @@ label sex:
 
     if isknown == 0 and istrap == 1:   
         scene fd_base_p_disco_suprise00000 with dissolve 
-        "It was just a Blowjob but she looks like she is in pure bliss."
-        "Though come to think on it, yeah I guess this was pretty much my ideal 'date' too."
-        "Almost"
-        "Maybe I should push my luck..."
+        nar "It was just a Blowjob but she looks like she is in pure bliss."
+        nar "Though come to think on it, yeah I guess this was pretty much my ideal 'date' too."
+        nar "Almost"
+        nar "Maybe I should push my luck..."
         scene fd_base_mc_disco_suprise101 with dissolve
         mc"If you're up for it, I'd love to take things a little further."
         scene fd_base_p_disco_suprise00001 with dissolve ##Need an Original Render for this
-        "She looks frightened at the idea"
+        nar "She looks frightened at the idea"
         scene fd_base_mc_disco_suprise102 with dissolve
         mc"Sorry I'm pushing too much forget I said that"
         scene fd_base_p_disco_suprise1a00003 with dissolve
         sam"No I do really...{w} it's just..."   
         sam"Shit, I'm sorry [mc] maybe... maybe you should just go home"   
         scene fd_base_p_disco_suprise1a00004 with dissolve
-        "She stands up"
+        nar "She stands up"
         scene fd_base_p_disco_suprise_stand0001 with fade
-        "Wow I really fucked up I thought things were going well but I guess I pushed too much"
+        nar "Wow I really fucked up I thought things were going well but I guess I pushed too much"
         scene fd_base_p_disco_suprise_stand0002 with dissolve
         sam"*Sniffle"
         scene fd_base_p_disco_suprise_stand0003 with dissolve
-        "Aw jeez she's crying?{w} way to go you turn a good date in to tears."
+        nar "Aw jeez she's crying?{w} way to go you turn a good date in to tears."
         mc"Hey [sam] I'm really sorry I didn't mean to push you like we can just call it a night I'll-"
         ## Turns to OP
         scene fd_300_blank_cry00009 with dissolve
@@ -1010,7 +935,7 @@ label sex:
         mc"Hey hey its okay, told me what?"
         scene fd_300_blank_cry00013 with dissolve
         sam"Promise you wont hate me?"
-        "Uh oh"
+        nar "Uh oh"
         scene fd_300_blank_mcc00022 with dissolve
         mc"Hey look at me, I promise."
         scene fd_300_blank_cry00011 with dissolve
@@ -1020,11 +945,11 @@ label sex:
         scene fd_300_blank_cry00018 with dissolve
         sam"Well they...{w} they weren't all lies"
         scene fd_300_blank_mcc00027 with dissolve
-        "Wait"
+        nar "Wait"
         scene fd_300_blank_cry00017 with dissolve
         sam"I mean I'm a {i}girl{/i}"
         scene fd_300_blank_mcc00028 with dissolve
-        "Hold on"
+        nar "Hold on"
         scene fd_300_blank_cry00013 with dissolve
         sam"It's just that"
         sam"Ugh I really like you [mc] you were so nice to me."
@@ -1089,8 +1014,8 @@ label sex:
         sam"I can cover it you don't even have to see my cock you can pretend its not there!"
         #"Hmm... ah fuck what the hell why not"
         scene fd_300_blank_mcc00029 with dissolve                    
-        "{size=+10}{b}...{/b}{/size}"
-        "Ah what the hell I've already come this far"
+        nar "{size=+10}{b}...{/b}{/size}"
+        nar "Ah what the hell I've already come this far"
         scene fd_300_blank_mcc00030 with dissolve                    
         #you can see her desperation from still being a virgin 
         # her hips aching for it begging
@@ -1114,7 +1039,7 @@ label sex:
         scene fd_base_p_disco_suprise00005 with dissolve 
         mc"it looks almost like-"
         scene fd_base_p_disco_suprise00002a with dissolve 
-        "[sam] tries to speak but nothing comes out"
+        nar "[sam] tries to speak but nothing comes out"
         scene fd_base_p_disco_suprise00002b with dissolve 
         $ renpy.pause ()   
         scene fd_base_p_disco_suprise00006 with dissolve 
@@ -1128,20 +1053,20 @@ label sex:
         mc"that's odd why would you have a..."
         scene fd286a with dissolve 
         mc"Didn't you say you moved here recently?"
-        "She doesn't respond and when you turn to her you see."
+        nar "She doesn't respond and when you turn to her you see."
         scene fd_300_blank_dry00000 with dissolve 
-        "You can see she is upset"
+        nar "You can see she is upset"
         scene fd_300_blank_dry00002 with dissolve 
         sam"I didn't say when."
-        "Slowly you are start to piece things together"
+        nar "Slowly you are start to piece things together"
         scene fd_mc_react_shock00000b with dissolve 
         mc"Wait"
         scene fd_300_blank_dry00001 with dissolve 
         sam"[mc] please don't be mad at me?"
         mc"Please [sam] I could never-"
         scene fd_300_blank_cry00008 with dissolve 
-        "And with that she bursts out crying"
-        "Fuck I must have really struck a nerve, I should have just left the stupid book alone."
+        nar "And with that she bursts out crying"
+        nar "Fuck I must have really struck a nerve, I should have just left the stupid book alone."
         ##sam"But{w} I have to tell you something... "
         mc"[sam] please don't cry"
         mc"Please uhh, deep breaths, just breathe and tell me what you have to say I wont be mad how could I ever"
@@ -1173,8 +1098,8 @@ label sex:
             scene fd_mc_react_shock00005 with dissolve
             mc"No they were lying like the always did"
             scene fd_300_blank_mc00008 with dissolve
-            "God it was so long ago but I can see highschool is still eating at her everyday"
-            "Kids are such dicks."  
+            nar "God it was so long ago but I can see highschool is still eating at her everyday"
+            nar "Kids are such dicks."  
             mc"Gosh I'm so sorry what you went through."  
             scene fd_300_blank_cry00018 with dissolve
             sam"You don't need to apologize [mc] you have {i}always{/i} the one person who has been nice to me"     
@@ -1212,7 +1137,7 @@ label sex:
         scene fd_300_blank_cry00017
         sam"It made me so happy even if the bullying got worse after that I could always think back to that week with you"
         scene fd_mc_react_shock00006 with dissolve
-        "Jeez I barely remember that class had I know she was going through so much..."
+        nar "Jeez I barely remember that class had I know she was going through so much..."
         scene fd_mc_react_shock00007 with dissolve
         mc"Really I had no idea-"
         scene fd_300_blank_crya00024 with dissolve
@@ -1232,26 +1157,26 @@ label sex:
         sam"God, [MC] don't make me say it... Yes"
         scene fd_300_blank_crya00023 with dissolve
         sam"but if you want maybe you{w}... maybe you can be my first?"
-        "Oh fuck just hearing that gets you ticking again."
+        nar "Oh fuck just hearing that gets you ticking again."
         scene fd_300_blank_mcc00023 with dissolve
-        "On the other hand this is really quite a lot to drop on a first date maybe you shouldn't"
+        nar "On the other hand this is really quite a lot to drop on a first date maybe you shouldn't"
         scene fd_300_blank_mcc00024 with dissolve
         ##sam"but I'm getting way to old to still be a virgin [MC] and I really like you [MC] could you...{w} you now..."
         ##sam"would you like to be my first?{w} Please?"
         mc"[sam] I, this is so much to take in at once..."
-        "I never knew she had it so hard and that I could have had such an impact on her life if only I had noticed I could have-"
+        nar "I never knew she had it so hard and that I could have had such an impact on her life if only I had noticed I could have-"
         scene fd_300_blank_mcc00026 with dissolve
         sam"{size=-10}[MC] please?{/size}"        
         scene fd_300_blank_mcc00025 with dissolve
-        "fuck how did you get undressed so fast!"
+        nar "fuck how did you get undressed so fast!"
         scene fd304a with dissolve
         mc'F{sc=2}uuu{/sc}ck'
         scene fd304c with dissolve
         sam"{size=-10}please...{/size}"   
         scene fd305c with dissolve
-        "Well I guess we i've been standing here naked too..."
-        "God am I really going to do this? This is way more baggage than I expected."
-        "Fuck this girl is crazy for me..."
+        nar "Well I guess we i've been standing here naked too..."
+        nar "God am I really going to do this? This is way more baggage than I expected."
+        nar "Fuck this girl is crazy for me..."
         ## "I guess I {i}have{/i} to make it up to her now"
 
         if istrap == 1 :
@@ -1266,7 +1191,7 @@ label sex:
                 subpixel True
                 yalign 1.0
                 linear 6.0 yalign 0.0
-        "Though judging by that look and her squirms of in almost desperation I don't think I could 'No' is even an option at this point."
+        nar "Though judging by that look and her squirms of in almost desperation I don't think I could 'No' is even an option at this point."
         if istrap == 1 :
             #show fd303p2:
             scene newpan3:  
@@ -1285,7 +1210,7 @@ label sex:
 
     #mc"Why don't so start by bending over-"
     mc"Why don't so start by-"    
-    "Her eyes light up"
+    nar "Her eyes light up"
     scene fd306b with dissolve
     sam"{size=+10}{b} YES!{/b}{/size}"
     scene fd306c with dissolve
@@ -1293,18 +1218,18 @@ label sex:
     scene fd306 with dissolve
     sam"You have no idea how much this means to me!"
     scene transition with dissolve
-    "She wastes no time and plonks herself down presenting herself to you"
+    nar "She wastes no time and plonks herself down presenting herself to you"
     if istrap == 1 :
         scene fd456a with dissolve
-        "God this is not how I thought this date was going to turn out"
+        nar "God this is not how I thought this date was going to turn out"
         scene fd457 with dissolve
-        "Not at all"
+        nar "Not at all"
     elif istrap == 0 :   
         scene fd456va with dissolve
-        "This is not how I thought this date was going to turn out"
+        nar "This is not how I thought this date was going to turn out"
         scene pussyplay
-        "She seemed so shy not 20 minutes ago"
-        "but I'm not complaining"
+        nar "She seemed so shy not 20 minutes ago"
+        nar "but I'm not complaining"
 
 
     menu:
@@ -1312,13 +1237,13 @@ label sex:
             $ isfoot = 1
             if istrap == 1 :
                 scene fd458 with dissolve
-                "While we are here I might as well start with her sexy feet"
+                nar "While we are here I might as well start with her sexy feet"
                 scene fd460a with dissolve
                 mc"You have such cute feet I just want to kiss them all over"
 
             elif istrap == 0 :   
                 scene fd_vback_start0b with dissolve
-                "While we are here I might as well start with her sexy feet"
+                nar "While we are here I might as well start with her sexy feet"
                 scene fd_vback_start0 with dissolve
                 mc"You have such cute feet I just want to kiss them all over"
 
@@ -1432,7 +1357,7 @@ label sexp:
 
     menu:
         "[MC] Jerks her off":   
-            "Initially you were unsure about but now you get help but want to touch her dick"
+            nar "Initially you were unsure about but now you get help but want to touch her dick"
             scene fdhelp10b
             $ renpy.pause ()    
             scene fdhelp11b
@@ -1471,7 +1396,7 @@ label sexp:
                     scene fd_stop_blow4
                     sam"{size=-14}Okay{/size}"
                     scene fdblower2 with fade
-                    "Well no backing down now"
+                    nar "Well no backing down now"
                     scene fdblow3d01
                     $ renpy.pause (.25) 
                     scene fdblow3d01a
@@ -1495,22 +1420,22 @@ label sexp:
                     $ renpy.pause () 
                     sam"Yes!"
                     scene sexjerk3a
-                    "Suddenly you feel a small hand gently pushing on your head"
-                    "You must be doing it right then"
+                    nar "Suddenly you feel a small hand gently pushing on your head"
+                    nar "You must be doing it right then"
                     $ renpy.pause () 
                     sam"Ahh!"
-                    "You feel her tense up"
+                    nar "You feel her tense up"
                     scene fdblower6
                     sam"*hmmm*"
                     sam"{size=-14}[MC]{/size}"
                     scene fdblow3d05
-                    "You speed up"
+                    nar "You speed up"
                     $ renpy.pause () 
                     scene sexjerk3c
                     $ renpy.pause () 
                     sam"Wait I'm gonna-"
                     scene fdblow3d05a
-                    "Before she can finish you feel her hands and feet tense up while clamping on you"
+                    nar "Before she can finish you feel her hands and feet tense up while clamping on you"
                     scene fdblow3d05b
                     sam"{sc}FUUCK{/sc}"
                     scene fd_back_orgasm_pull_pov004 with fade
@@ -1530,13 +1455,13 @@ label sexp:
                     scene fdblow3d07c
                     $ renpy.pause () 
                     scene fdblow3d07d
-                    "You gently squeeze her mouth open"
+                    nar "You gently squeeze her mouth open"
                     scene fdblow3d07e
                     sam"Ahhh"
                     scene fdblow3d08
                     $ renpy.pause () 
                     scene fdblow3d09
-                    "*Blep*" 
+                    nar "*Blep*" 
                     scene fdblow3d09a
                     $ renpy.pause () 
                     scene fdblow3d09f
@@ -1565,7 +1490,7 @@ label sexp:
                     scene fdblow3d11c
                     $ renpy.pause () 
                     scene fdblow3d12
-                    "*Smooch*"
+                    nar "*Smooch*"
                     scene fdblow3d12a
                     $ renpy.pause () 
                     scene fdblow3d13a
@@ -1582,14 +1507,14 @@ label sexp:
                     mc"*Shhh*"
                     scene fdblow3d07
                     sam"Please [MC] jus-"
-                    "You give a wry smile"
+                    nar "You give a wry smile"
                     scene fdblow3d11b
-                    "and lean inwards her"
+                    nar "and lean inwards her"
                     scene fdblow3d11c
                     mc"Greedy girl"
                     scene fdblow3d12
                     
-                    "*Smooch*"
+                    nar "*Smooch*"
                     scene fdblow3d12a
                     $ renpy.pause () 
                     scene fdblow3d13a
@@ -1636,7 +1561,7 @@ label sexp:
         "She Jerks off":
             scene fdhelp2 with dissolve
             #Need a ani of her holding her cock
-            "Despite her covering her cock you can see she is practically bucking in to her hand."
+            nar "Despite her covering her cock you can see she is practically bucking in to her hand."
             mc"[sam] I want you to touch yourself."
             scene fdhelp4 with dissolve
             sam"Really can I?"
@@ -1670,7 +1595,7 @@ label sexp:
             $ renpy.pause () 
             menu:
                 "[MC] Jerks her off":  
-                    "Initially you were unsure about her dick but you let the intrusive thoughts win."
+                    nar "Initially you were unsure about her dick but you let the intrusive thoughts win."
                     scene fdj105a
                     $ renpy.pause ()    
                     scene fdj105b
@@ -1689,7 +1614,7 @@ label sexp:
                     scene fdhelp8e with dissolve   
                     sam"*Mmmm*"       
                     scene sexjerk2a    
-                    "I can feel her cock tensing up... maybe shes close to-"
+                    nar "I can feel her cock tensing up... maybe shes close to-"
                     scene fdhelp3
                     sam"Oh fuck [MC] Im-"
                     scene fdjerker02a with flash 
@@ -1699,8 +1624,8 @@ label sexp:
                     scene fdjerker02c with flash
                     $ renpy.pause(delay = 0.5, hard = True)
                     scene fdjerker02d with dissolve 
-                    "Fuck"
-                    "She came buckets"
+                    nar "Fuck"
+                    nar "She came buckets"
                     mc"Woah you really ca-"
                     scene fdjerker03d with dissolve
                     $ renpy.pause () 
@@ -1727,7 +1652,7 @@ label sexp:
                     scene fdjerker10 with fade
                     mc"Got it" 
                     scene fdjerker04
-                    "God she really is covered"
+                    nar "God she really is covered"
                     scene fdjerker04c
                     sam"Thanks"
                     scene fdjerker04d
@@ -1757,16 +1682,16 @@ label sexp:
                     $ renpy.pause () 
                     scene fd_back_o_face004
                     sam"Oh fuck!"
-                    "*You pull out*"
+                    nar "*You pull out*"
                     scene fd_back_o_face002
                     sam"Are you done?"
                     scene fd_back_o_face003
                     sam"I mean it doesn't feel like you fin-"
-                    "You lean in"
+                    nar "You lean in"
                     scene fd471a
                     mc"Relax"
                     scene backKiss
-                    "*Smooch*"
+                    nar "*Smooch*"
                     scene fd471b
                     mc"We are just getting started"
                     mc"Now bend over for me."
@@ -1774,10 +1699,10 @@ label sexp:
         "Move on":    
             if isknown == 0: 
                 scene fd_pback_mc0
-                "*Wince*"
+                nar "*Wince*"
             elif isknown == 1: 
                 scene fd_pback_mc1
-                "*Wince*"                
+                nar "*Wince*"                
                     # #you slow down
                     # scene fdhelp8e
                     # $ renpy.pause () 
@@ -1852,8 +1777,8 @@ label sexv:
                     sam"*Hmm*"
                     scene FinTwo2  
                     $ renpy.pause () 
-                    "*Shlick*{w} *Shlick*{w} *Shlick*"
-                    "She is already soaking wet"
+                    nar "*Shlick*{w} *Shlick*{w} *Shlick*"
+                    nar "She is already soaking wet"
                     scene fd_vback_cum4
                     $ renpy.pause () 
                     mc"Ready for some more stimulation"    
@@ -1869,14 +1794,14 @@ label sexv:
                     sam"Yes{w} Yes{w} Yes!"
                     scene fd_vback_cum_finger3rd_56  with vpunch
                     sam"oh{w} oh!{w} {sc}Fuuck{/sc}"
-                    "She forced your head down thrusting you Tongue into her pussy"
+                    nar "She forced your head down thrusting you Tongue into her pussy"
                     scene fd_vback_squirt112 at Shake((0,0,0,0), 1.8, dist=3)    
                     sam"ah eeei!"
                     scene fd_backv_pen412
-                    "finally she releases"
+                    nar "finally she releases"
                     sam"*panting*"
                     sam"Oh god!"
-                    "Clearly dazed you give her a second to catch her breath"
+                    nar "Clearly dazed you give her a second to catch her breath"
                     scene fdhelp4 with fade
                     # mc"I think I already know the answer but I take it you've never been tongue fucked before?"
                     # sam"nu uh"
@@ -1896,8 +1821,8 @@ label sexv:
                     scene FinThree1 
                     $ renpy.pause (1.8) 
                     scene FinThree2   
-                    "*Shlick*{w} *Shlick*{w} *Shlick*"
-                    "She is already practically dripping wet"
+                    nar "*Shlick*{w} *Shlick*{w} *Shlick*"
+                    nar "She is already practically dripping wet"
                     sam"Ahh!"
                     scene FinThree3
                     $ renpy.pause () 
@@ -1907,7 +1832,7 @@ label sexv:
                     $ renpy.pause (.3) 
                     scene FinThree4
                     $ renpy.pause () 
-                    "Now just speed up and bring her to a-"
+                    nar "Now just speed up and bring her to a-"
                     sam"mmmm"
                     scene fdhelp8f
                     sam"I'm Gonna-"
@@ -1998,8 +1923,8 @@ label sexv1:
     $ renpy.pause ()   
 
     if isoral == 1 :
-        mc"(better pull out before I get too clo-)"
-        "before you can react she goes quite"
+        mct"better pull out before I get too clo-"
+        nar "before you can react she goes quite"
         scene fd_back_o_face003
         mc"{size=-10}eip!{/size}"
         $ renpy.pause(delay = 0.5, hard = True)
@@ -2007,17 +1932,17 @@ label sexv1:
         $ renpy.pause(delay = 0.5, hard = True)
         scene missionwrapped with flash
         sam"Ohh FUUUCK!"
-        "Suddenly she pulls you in close with her legs"
-        "Moving her own hips on you to finish herself off"
+        nar "Suddenly she pulls you in close with her legs"
+        nar "Moving her own hips on you to finish herself off"
         scene fd_back_orgasm_pull_pov000 with dissolve
         mc"You naughty little minx"
         scene fd_back_orgasm_pull_pov002 with dissolve
         mc"I was going to edge you a little longer but you pulled me in with your feet like a little monkey"
         scene fd_back_orgasm_pull_pov005 with dissolve
         sam"but like a cute monkey, right?"
-        "(so quickly she seems to have learn how to push you just right)"
+        nar "So quickly she seems to have learned how to push you just right."
         scene backKiss
-        "*Smooch*"
+        nar "*Smooch*"
         scene fd_back_orgasm_pull_pov105 with dissolve
         mc"yup certifiably adorable"
         mc"Now get on your knees I still have another round in me"
@@ -2028,7 +1953,7 @@ label sexv1:
 
         $ renpy.pause ()    
     elif isoral == 0 :   
-        mc"(better pull out before I get too close)"
+        mct"Better pull out before I get too close."
         scene vback_penhold   
         $ renpy.pause ()
         scene fdhelp4
@@ -2038,7 +1963,7 @@ label sexv1:
         sam"So we're not done?"
         mc"Come here"
         scene backKiss
-        "*Smooch*"
+        nar "*Smooch*"
         scene fd_back_orgasm_pull_pov105 with dissolve
         mc"Of course not, now lets see you on your knees"
         scene fd_back_orgasm_pull_pov004  with dissolve
@@ -2052,12 +1977,12 @@ label sexv1:
     # sam"I can feel you getting tense, getti-"
     # sam"you must be close!"
     # menu:
-    #     "Come inside":
+    #     nar "Come inside":
     #         $ iscumout = 0
-    #         "TBA"
-    #     "Come Outside":
+    #         nar "TBA"
+    #     nar "Come Outside":
     #         $ iscumout = 1
-    #         "TBA"
+    #         nar "TBA"
 
 label sexv2:
     scene fd_vdoggy_present_0a with fade
@@ -2167,7 +2092,7 @@ label sexv2:
                     scene fd_doggy_up_kiss00001
                     $ renpy.pause ()  
                     scene fd446
-                    "*Smooch*"
+                    nar "*Smooch*"
                     scene fd447a with dissolve        
                     $ renpy.pause ()    
                     scene fd447b with dissolve     
@@ -2201,13 +2126,13 @@ label sexv2:
                     sam"*ngggh*"
                     sam"So full"
                     scene fd_vdoggy_up_in_close04a
-                    "*Twitch*"                 
+                    nar "*Twitch*"                 
                     scene twitch
-                    "*Twitch* *Twitch*" 
+                    nar "*Twitch* *Twitch*" 
                     scene fd_vdoggy_up_in_close05
                     $ renpy.pause ()  
                     scene fd_vdoggy_up_in_close06a
-                    "Sploosh"
+                    nar "Sploosh"
                     scene fd_vdoggy_up_fin200007
                     sam"Oh Fuck"
                     mc"welp you {i}were{/i} full"
@@ -2262,7 +2187,7 @@ label sexv2:
 
             $ renpy.pause ()  
         "Push her down":   
-            "lets get some more leverage"
+            nar "lets get some more leverage"
             scene fd448  with dissolve
             mc"Alright"
             scene fd449  with dissolve
@@ -2478,7 +2403,7 @@ label sexp2:
                     scene fd_doggy_up_kiss00001
                     $ renpy.pause ()  
                     scene fd446
-                    "*Smooch*"
+                    nar "*Smooch*"
                     scene fd447a with dissolve        
                     $ renpy.pause ()    
                     scene fd447b with dissolve     
@@ -2562,7 +2487,7 @@ label sexp2:
 
             $ renpy.pause ()  
         "Push her down":   
-            "lets get some more leverage"
+            nar "lets get some more leverage"
             scene fd448  with dissolve
             mc"Alright"
             scene fd449  with dissolve
@@ -2668,7 +2593,7 @@ label sexp2:
 
 label wrapup:
     scene transition with fade
-    "A few moments later"
+    nar "A few moments later"
     scene fd_mc_post3 with fade
     mc"Phew looks like we made quite a mess"
     if iscumout == 1:
@@ -2752,7 +2677,7 @@ label wrapup:
         
     
     sam"So... a second date date?"
-    "Too cute"
+    nar "Too cute"
     if DevCom == 1:
         show grim3
         gc"I kind of got numb to what I was making at a point and lost all sense of what looked 'sexy', I hope I there were some good scene through out the game."
@@ -2764,7 +2689,7 @@ label wrapup:
     scene fd_end05a with dissolve
     $ renpy.pause ()  
     scene fd_end06
-    "Smooch"
+    nar "Smooch"
     $ renpy.pause ()  
     scene fd_end06a
     $ renpy.pause ()  
@@ -2782,7 +2707,7 @@ label wrapup:
     scene fd_end05a
     mc"we can plan it while we shower"
     scene transition with fade
-    "The End"
+    nar "The End"
     if DevCom == 1:
         show grim1
         gc"And that concludes the Commentary track, thanks for listening to my ramblings I hope they were insightful,"
@@ -2807,35 +2732,35 @@ label ending:
         xzoom 0.5 yzoom 0.5
     $ persistent.completed_game = True
     $ renpy.save_persistent()
-    "Thank you {sc}SO MUCH{/sc} for playing my game!"
-    "I hope you enjoyed it"
-    "This was my first making making an erotic game it was a lot of fun to make!"
+    gc "Thank you {sc}SO MUCH{/sc} for playing my game!"
+    gc "I hope you enjoyed it"
+    gc "This was my first making making an erotic game it was a lot of fun to make!"
     scene 999end3 with dissolve:
         xzoom 0.5 yzoom 0.5    
-    "I'm not completely happy with how my dialogue flowed at times, writing was far more challenging than I thought it would be"
-    "If you have any {b}feedback{/b} or {b}criticism{/b} please share it with me on my {a=https://www.subscribestar.com/grimciri}SubscribeStar{/a}"
+    gc "I'm not completely happy with how my dialogue flowed at times, writing was far more challenging than I thought it would be"
+    gc "If you have any {b}feedback{/b} or {b}criticism{/b} please share it with me on my {a=https://www.subscribestar.com/grimciri}SubscribeStar{/a}"
     scene 999end2 with dissolve:
         xzoom 0.5 yzoom 0.5
-    "This was also my first time using Daz 3D... I still have much to learn about this program."
-    "I am very sorry not all the renders turned out great"
-    "I hope with what I've learned there will be less mistakes and better animations in future"
-    "In hindsight I should have watched, like, literally {i}any{/i} tutorials before starting this project"
+    gc "This was also my first time using Daz 3D... I still have much to learn about this program."
+    gc "I am very sorry not all the renders turned out great"
+    gc "I hope with what I've learned there will be less mistakes and better animations in future"
+    gc "In hindsight I should have watched, like, literally {i}any{/i} tutorials before starting this project"
     scene 999end3 with dissolve:
         xzoom 0.5 yzoom 0.5
-    "Again and {b}tips{/b} or {b}feedback{/b} to improve is greatly appreciated at {a=https://www.subscribestar.com/grimciri}SubscribeStar{/a}"
+    gc "Again and {b}tips{/b} or {b}feedback{/b} to improve is greatly appreciated at {a=https://www.subscribestar.com/grimciri}SubscribeStar{/a}"
     scene 999end1 with dissolve:
         xzoom 0.5 yzoom 0.5
-    "I will take any feedback to heart to improve on my next game!"
+    gc "I will take any feedback to heart to improve on my next game!"
     scene 999end4 with dissolve:
         xzoom 0.5 yzoom 0.5
-    "Thank you again!"
+    gc "Thank you again!"
     scene 999end6 with dissolve :
         xzoom 0.5 yzoom 0.5   
-    "I love you all and be excellent to each other!"
+    gc "I love you all and be excellent to each other!"
     scene transition with fade
     $ renpy.pause ()  
     scene shower with fade
-    "{sc=2}The End For Real{/sc}"
+    gc "{sc=2}The End For Real{/sc}"
     $ renpy.pause ()  
     return
 
@@ -2888,16 +2813,16 @@ label date_old:
 
 label oldhj:
     scene fd228 with dissolve   
-    "And with that, she is truly at a loss for words."
+    nar "And with that, she is truly at a loss for words."
     scene fd228a with dissolve  
-    "You can almost see the gears turning in her head."
+    nar "You can almost see the gears turning in her head."
     scene fd228b with dissolve      
-    "Without a word she starts to move"
+    nar "Without a word she starts to move"
     scene fd229 with dissolve    
     sam"I can touch it right?"
     scene fd230 with dissolve    
     mc"Well you weren't going to stop at just looking"
-    "She wastes no time"
+    nar "She wastes no time"
     scene fd231 with dissolve   
     $ renpy.pause ()
     scene fd232 with dissolve   
@@ -2917,7 +2842,7 @@ label oldhj:
     scene fd231 with dissolve  
     $ renpy.pause ()   
     scene fd234 with dissolve    
-    "She starts to lean in"
+    nar "She starts to lean in"
     scene fd235 with dissolve  
     $ renpy.pause ()  
     scene fd237 with dissolve          
@@ -2932,7 +2857,7 @@ label oldhj:
     sam"You're already so hard and...{w} and {size=+10}{b}big{/b}{/size}."
     scene fd241 with dissolve 
     sam"and the way the veins are throbbing its perfect{w} you're perfect."
-    "Now your at a loss for words you've never had a girl flatter you so much."
+    nar "Now your at a loss for words you've never had a girl flatter you so much."
     scene fd241d with dissolve
     sam"It makes my mind go blank"
     scene fd241e with dissolve
@@ -2945,7 +2870,7 @@ label oldbj:
     scene fd244 with dissolve
     $ renpy.pause ()  
     scene fd245a with dissolve
-    "she looks at you seemly expecting you to tell what to do next"
+    nar "she looks at you seemly expecting you to tell what to do next"
     mc"ready?"
     sam"mmmhmm"
     scene fdt101 with dissolve
@@ -3024,91 +2949,3 @@ label oldbj:
     scene fd256b with dissolve  
     jump ending
 
-
-# label sex2:
-
-#     scene dickslap1
-#     $ renpy.pause () 
-
-
-#     scene blow2
-#     $ renpy.pause () 
-#     scene deep1
-#     $ renpy.pause () 
-
-#     scene pdog1
-#     $ renpy.pause () 
-#     scene pdog2
-#     $ renpy.pause () 
-#     scene pdog3
-#     $ renpy.pause () 
-
-
-#     scene fd456 with dissolve
-
-#     $ renpy.pause ()  
-
-#     scene mission0
-#     $ renpy.pause () 
-
-#     scene mission1a
-#     $ renpy.pause () 
-#     menu:
-#         "faster":
-#             scene mission1
-#             $ renpy.pause ()  
-
-#         "Closer":
-#             scene mission1b
-#             $ renpy.pause ()  
-
-#     menu:
-#         "Jerk 01":
-#             scene fdj105 with dissolve
-#             $ renpy.pause ()   
-#             scene sexjerk1
-#             $ renpy.pause ()  
-#         "Jerk 02":
-#             scene fdj105 with dissolve
-#             $ renpy.pause ()   
-#             scene sexjerk2
-#             $ renpy.pause ()  
-#         "Change Pos":
-#             scene pdog1
-#             $ renpy.pause ()  
-
-#             scene pdog1
-#             $ renpy.pause ()      
-#             scene pdog2
-#             $ renpy.pause ()      
-#             scene pdog3
-#             $ renpy.pause ()     
-
-
-# you look so sexy like that
-# You Like that?
-# Good Girl
-# You feel good
-# ahnnn
-# Mhph!
-# Aaahnn
-# her hole squeezes firm 
-# Grasping each inch
-# Nnh-nfaah
-# Her hole tightens around your cock
-# Jolt of pleasure
-# tight squeeze at hearing that
-# Whimper
-# Ahh, thats it!
-# tits bounce
-# Hips smacking against her ass
-# Keep going I can take it
-# I need this
-# My ass feels soo good
-# you make me feel so good
-# I love it 
-# I love you
-# so do you think we can do this again sometime
-# I'm yours 
-# please breed me
-# yes use me as you please
