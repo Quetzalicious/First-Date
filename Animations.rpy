@@ -7,7 +7,7 @@ default jerknum1 = .10
 
 image theatrepan:
     "/Theatre/fd_intro_0000.jpg"
-    1
+    .8
     "/Theatre/fd_intro_0001.jpg"
     .12
     "/Theatre/fd_intro_0002.jpg"
